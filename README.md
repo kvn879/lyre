@@ -1,2 +1,2 @@
-# guithub
+# lyre
 band collaboration site
