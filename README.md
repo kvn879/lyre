@@ -1,2 +1,2 @@
 # lyre
-band collaboration site
+music collaboration site :)
