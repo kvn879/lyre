@@ -1,6 +1,6 @@
 import { Guitar } from 'lucide-react'
 
-function Navbar() {
+export default function Navbar({goToApp}) {
     return (
         <nav className="flex items-center justify-between px-6 md:px-12 py-6 border-b border-white/5">
             <div className="flex items-center gap-2">
@@ -15,9 +15,12 @@ function Navbar() {
             </div>
             <div className="flex items-center gap-3 gh-body text-sm">
                 <button className="text-[#94A3B8] hover:text-[#F8FAFC] transition-colors px-3 py-2">Log In</button>
+                <button onClick={goToApp} 
+                className="px-4 py-2 rounded-xl font-meduium transition-all duration-200 hover:-translate-y-0.5"
+                style={{ background: "#8B5CF6", color: "#F8FAFC"}}>
+                    Get Started
+                </button>
             </div>
         </nav>
     );
 }
-
-export default Navbar

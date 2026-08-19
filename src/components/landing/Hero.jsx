@@ -1,8 +1,8 @@
 import { Play } from "lucide-react"
-import Badge from './Badge'
-import { SONGS } from "./Mockdata" 
+import Badge from '../../common/Badge'
+import { SONGS } from "../../data/Mockdata" 
 
-export default function Hero(){
+export default function Hero({ goToApp }){
     return(
         <section className="px-6 md:px-12 pt-20 pb-24 max-w-5xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs gh-body text-[#94A3B8] border border-white/10 mb-6">

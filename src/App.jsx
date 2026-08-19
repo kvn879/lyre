@@ -1,12 +1,13 @@
-import { BrowserRouter as Router, Route, Routes} from 'react-router-dom'
-import Landing from "./components/landing/Landing"
+import { useState } from "react";
+import Landing from "./pages/Landing"
+import Sidebar from './components/dashboard/Sidebar/Sidebar';
+import Dashboard from "./pages/Dashboard";
 
 function App() {
-    return (
-        <div>
-            <Landing/>
-        </div>
-    );
+    const[view, setView] = useState("landing");
+
+    return view === "landing" ? (
+        <Landing goToApp={() => setView("dashboard")}/>) : (<Dashboard goHome={() => setView("landing")}/>)
 }
 
 export default App;

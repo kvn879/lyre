@@ -1,6 +1,6 @@
 
 
-export default function CallToAction(){
+export default function CallToAction({ goToApp }){
     return(
         <section className="px-6 md:px-12 py-20 text-center">
             <h2 className="gh-body font-semibold text-3xl mb-6">Ready to get the band together?</h2>
