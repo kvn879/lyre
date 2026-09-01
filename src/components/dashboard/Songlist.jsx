@@ -1,7 +1,7 @@
 import { Music, Clock } from "lucide-react";
 import Avatar from "../../common/Avatar";
 import Badge from "../../common/Badge";
-import { SONGS } from "../../data/mockData";
+import { SONGS } from "../../data/Mockdata";
 
 export default function SongList() {
   return (

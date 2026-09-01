@@ -5,7 +5,7 @@ import Bandlist from './Bandlist';
 import ProfileFooter from './ProfileFooter';
 import BandSwitcher from './BandSwitcher';
 
-export default function Sidebar() {
+export default function Sidebar({ selectedTab, onSelect}) {
     const [bandOpenMenu, setBandOpenMenu] = useState(false)
     const ref = useRef(null)
 
@@ -26,7 +26,7 @@ export default function Sidebar() {
             </div>
 
             <BandSwitcher open={bandOpenMenu} setOpen={setBandOpenMenu}/>
-            <SidebarNav/>
+            <SidebarNav selectedTab={selectedTab} onSelect={onSelect} />
             <Bandlist/>
             <ProfileFooter/>
         </aside>
