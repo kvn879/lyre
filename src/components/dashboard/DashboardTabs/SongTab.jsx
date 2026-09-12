@@ -152,8 +152,64 @@ export default function SongTab() {
                     <Metric label="Key" value={selectedSong?.key || "-"} />
                     <Metric label="Length" value={selectedSong?.length || "-"} />
                 </div>
+                <div className="mt-6 space-y-5">
+                    <Panel title="overview" icon={<Sparkles size={14}/>}>
+                        <p className="text-sm text-[#F8FAFC] leading-6">
+                            {selectedSong?.mood || "-"} · {selectedSong?.genre || "-"} · edited {selectedSong?.edited || "-"}
+                        </p>
+                    </Panel>
+
+                    <Panel title="Sticky Notes" icon={<StickyNote size={14} />}>
+                        <div className="space-y-3">
+                            {selectedSong?.notes.map((n, index) => (
+                                <div key={`${n.text}-${index}`} className="rounded-xl p-3 text-sm text-[#0F172A]" style={{ background: n.color || "#F8FAFC"}}>
+                                    {n.text}
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="mt-3 flex gap-2">
+                            <input value={noteText} onChange={(e) => setNoteText(e.target.value)} placeholder="Add a note..." className="flex-1 rounded-xl border border-white/10 bg-[#0F172A] px-3 py-2 text-sm text-[#F8FAFC] outline-none placeholder:text-[#94A3B8]" />
+                            <button type="button" onClick={addNote} className="rounded-xl bg-violet-500 px-3 py-2 text-sm text-white">
+                                Add
+                            </button>
+                        </div>
+                    </Panel>
 
 
+                    <Panel title="comments" icon={<MessageSquare size={14} />}>
+                        <div className="space-y-3">
+                            {selectedSong?.comments.map((c) => (
+                                <div key={c.id} className="rounded-xl bg-white/5 p-3">
+                                    <div className="flex items-center justify-between gap-3 text-xs text-[#94A3B8]">
+                                        <span className="font-medium text-[#F8FAFC]">{c.author}</span>
+                                        <span>{c.time}</span>
+                                    </div>
+                                    <p className="mt-2 text-sm text-[#E2E8F0]">{c.text}</p>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="mt-3 flex gap-2">
+                            <input value={commentText} onChange={(e) => setCommentText(e.target.value)} placeholder="Add a comment..." className="flex-1 rounded-xl border border-white/10 bg-[#0F172A] px-3 py-2 text-sm text-[#F8FAFC] outline-none placeholder:text-[#94A3B8]" />
+                            <button type="button" onClick={addComment} className="rounded-xl bg-violet-500 px-3 py-2 text-sm text-white">
+                                Post
+                            </button>
+                            
+                        </div>
+                    </Panel>
+
+                    <Panel title="activity" icon={<Activity size={14} />}>
+                        <div className="space-y-3">
+                            {selectedSong?.activity.map((a, index) => (
+                                <div key={`${a.text}-${index}`} className="flex items-center justify-between gap-3 text-sm">
+                                    <span className="text-[#E2E8F0]">{a.text}</span>
+                                    <span className="text-[#94A3B8]">just now</span>
+                                </div>
+                            ))}
+                        </div>
+                    </Panel>
+                </div>
             </div>
         </div>
     )
@@ -183,7 +239,7 @@ function Section({ title, songs, selectedSongId, onSelectSong }) {
                         >
                         <div className="flex items-center justify-between gap-3">
                             <div className="flex items-center gap-3 min-w-0">
-                                <div className="w-10 h-10 rounded-xl flex items-center justify-cetner" style={{ background: "#1E293B"}}>
+                                <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "#1E293B"}}>
                                     <Music size={16} color="#8B5CF6"/>
                                 </div>
 
@@ -201,6 +257,18 @@ function Section({ title, songs, selectedSongId, onSelectSong }) {
                     </button>
                 ))}
             </div>
+        </div>
+    )
+}
+
+function Panel({title, icon, children}) {
+    return (
+        <div className="rounded-2xl border border-white/10 p-4" style={{ background: "rgba(15, 23, 42, 0.7)"}}>
+            <div className="flex items-center gap-2 mb-3 text-sm font-medium text-[#F8FAFC]">
+                {icon}
+                {title}
+            </div>
+            {children}
         </div>
     )
 }
