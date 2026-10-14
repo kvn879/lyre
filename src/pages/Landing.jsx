@@ -6,14 +6,14 @@ import Footer from "../components/landing/Footer"
 import CallToAction from "../components/landing/CallToAction"
 import SidebarNav from "../components/dashboard/Sidebar/SidebarNav"
 
-export default function Landing({ goToApp }) {
+export default function Landing({ goToLogin }) {
     return(
         <div className="min-h-screen" style={{ background: "#0B0F19", color: "#F8FAFC"}}>
-            <Navbar goToApp={goToApp}/>
-            <Hero goToApp={goToApp}/>
+            <Navbar goToLogin={goToLogin}/>
+            <Hero goToLogin={goToLogin}/>
             <Features/>
             <Workflow/>
-            <CallToAction goToApp={goToApp}/>
+            <CallToAction goToLogin={goToLogin}/>
             <Footer/>
         </div>
     )

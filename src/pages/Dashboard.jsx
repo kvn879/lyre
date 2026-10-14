@@ -19,7 +19,7 @@ export default function Dashboard({ goHome }) {
         return (
             <>
                 <h1 className="gh-display font-semibold text-2xl mb-1">Good Evening</h1>
-                <p className="text-sm text-[#94A3B8] mb-8">Here's what's happening across your bands.</p>
+                <p className="text-sm text-[#94A3B8] mb-8">Here's what's happening in your band.</p>
 
                 <Bandcards />
 

@@ -1,8 +1,7 @@
-import { Play } from "lucide-react"
 import Badge from '../../common/Badge'
 import { SONGS } from "../../data/Mockdata" 
 
-export default function Hero({ goToApp }){
+export default function Hero({ goToLogin }){
     return(
         <section className="px-6 md:px-12 pt-20 pb-24 max-w-5xl mx-auto text-center">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs gh-body text-[#94A3B8] border border-white/10 mb-6">
@@ -18,12 +17,13 @@ export default function Hero({ goToApp }){
                 Write songs together, upload demos, assign tasks, and keep every version of every track organized in one place built for bands.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-                <button className="w-full sm:w-auto px-6 py-3.5 rounded-xl font-medium gh-body transition-all duration-200 hover:-translate-y-1 flex items-center justify-center gap-2" style={{ background: "#8B5CF6", color: "#F8FAFC"}}>
+                <button type="button" onClick={goToLogin} className="w-full sm:w-auto px-6 py-3.5 rounded-xl font-medium gh-body transition-all duration-200 hover:-translate-y-1 flex items-center justify-center gap-2" style={{ background: "#8B5CF6", color: "#F8FAFC"}}>
                     Start For Free
                 </button>
+                {/*
                 <button className="w-full sm:w-auto px-6 py-3.5 rounded-xl font-medium gh-body border border-white/10 hover:bg-white/5 transition-all duration-200 flex items-center justify-center gap-2">
                     <Play size={15}/>View Demo
-                </button>
+                </button> */}
             </div>
 
             {/* Screenshot mock here */}

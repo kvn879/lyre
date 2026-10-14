@@ -3,12 +3,12 @@ import {Home, Music, Users, ListChecks, Folder, Calendar, MessageCircle, Setting
 const NAV_ITEMS = [
     {id: "Dashboard", icon: Home, label: "Dashboard"},
     {id: "Songs", icon: Music, label: "Songs"},
-    {id: "Members", icon: Users, label: "Members"},
+    /*{id: "Members", icon: Users, label: "Members"},
     {id: "Tasks", icon: ListChecks, label: "Tasks"},
     {id: "Files", icon: Folder, label: "Files"},
     {id: "Calendar", icon: Calendar, label: "Calendar"},
     {id: "Chat", icon: MessageCircle, label: "Chat"},
-    {id: "Settings", icon: Settings, label: "Settings"}
+    {id: "Settings", icon: Settings, label: "Settings"}*/
 ]
 
 export default function SidebarNav({ selectedTab, onSelect }){

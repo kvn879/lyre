@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
-import { Activity, MessageSquare, CheckCircle2, Music, Plus, Sparkles, StickyNote } from 'lucide-react';
+import { Activity, MessageSquare, CheckCircle2, Music, Plus, Sparkles, StickyNote, Trash2 } from 'lucide-react';
 import { SONGS } from '../../../data/Mockdata';
+import SongCreation from './SongCreation';
 
 const sectionStyles = {
     "In progress": "text-[#8B5CF6]",
@@ -10,6 +11,7 @@ const sectionStyles = {
 
 export default function SongTab() {
     const [songs, setSongs] = useState(SONGS)
+    const [view, setView] = useState("list")
     const [selectedSongId, setSelectedSongId] = useState(SONGS.find(s => s.status === "In progress")?.id ?? SONGS[0]?.id ?? "");
     const [noteText, setNoteText] = useState("")
     const [commentText, setCommentText] = useState("")
@@ -20,56 +22,60 @@ export default function SongTab() {
 
     const selectedSong = songs.find(s => s.id === selectedSongId) ?? songs[0] ?? null;
 
-    if (!selectedSong) {
-        return <div>No songs available</div>; //or return null if needed later
+    const handleCreateSong = (newSong) => {
+        setSongs((currentSongs) => [newSong, ...currentSongs]);
+        setSelectedSongId(newSong.id);
+        setView("list");
     }
 
-    const addNewSong = () => {
-        const newSong = {
-      id: `song-${Date.now()}`,
-      title: `Untitled track ${songs.length + 1}`,
-      status: "In progress",
-      tempo: "88 BPM",
-      edited: "just now",
-      mood: "New idea",
-      key: "C major",
-      length: "3:00",
-      genre: "Indie",
-      people: ["You"],
-      notes: [{ text: "Fresh idea — capture the hook before the demo gets stale.", color: "#FDE68A" }],
-      comments: [],
-      activity: [{ text: "New song created" }],
-    };
+    if (view === "create") {
+        return (
+            <SongCreation
+                onCancel={() => setView("list")}
+                onCreate={handleCreateSong}
+            />
+        );
+    }
 
-    setSongs((currentSongs) => [newSong, ...currentSongs]);
-    setSelectedSongId(newSong.id);
-
+    if (!selectedSong) {
+        return (
+            <div className="space-y-4">
+                <p className="text-sm text-[#94A3B8]">No songs yet.</p>
+                <button type="button" onClick={() => setView("create")}>Create your first song</button>
+            </div>
+        );
     }
 
     const toggleSongStatus = (songId) => {
-        setSongs((currentSongs) => currentSongs.map((s) => s.id === selectedSongId ? {
-            ...s, status: s.status === "Completed" ? "In progress" : "Completed",
-            edited: "just now",
+        const changedAt = new Date().toISOString();
+        setSongs((currentSongs) => currentSongs.map((song) => song.id === songId ? {
+            ...song,
+            status: song.status === "Completed" ? "In progress" : "Completed",
+            edited: changedAt,
             activity: [
-                { text: `Song marked as ${s.status === "Completed" ? "In progress" : "Completed"}` },
-                ...s.activity
+                { text: `Song marked as ${song.status === "Completed" ? "In progress" : "Completed"}`, createdAt: changedAt },
+                ...song.activity
             ]
-        } : s))
+        } : song))
     }
 
     const addNote = () => {
         if (!noteText.trim()) return;
-        
-        setSongs((currentSongs) => currentSongs.map((s) => s.id === selectedSongId ? {
-            ...s, notes: [
-                ...s.notes,
-                { text: noteText.trim(), color: "#FDE68A" }
-            ],
-            edited: "just now",
+
+        const createdAt = new Date().toISOString();
+        setSongs((currentSongs) => currentSongs.map((song) => song.id === selectedSongId ? {
+            ...song,
+            notes: [...song.notes, {
+                id: crypto.randomUUID(),
+                text: noteText.trim(),
+                color: "#FDE68A",
+                createdAt,
+            }],
+            edited: createdAt,
             activity: [
-                { text: "New note added" },
-                ...s.activity],
-        } : s))
+                { text: "New note added", createdAt },
+                ...song.activity],
+        } : song))
 
         setNoteText("");
     }
@@ -77,21 +83,45 @@ export default function SongTab() {
     const addComment = () => {
         if (!commentText.trim()) return;
 
+        const createdAt = new Date().toISOString();
         const newComment = {
-            id: `c-${Date.now()}`,
+            id: crypto.randomUUID(),
             author: "You",
-            time: "just now",
+            createdAt,
             text: commentText.trim()
         }
 
-        setSongs((currentSongs) => currentSongs.map((s) => s.id === selectedSongId ? {
-            ...s, comments: [
-                ...s, comments, newComment
-            ],
-            edited: "just now",
-            activity: [{ text: "New comment added"}, ...s.activity],
-        }: s))
+        setSongs((currentSongs) => currentSongs.map((song) => song.id === selectedSongId ? {
+            ...song,
+            comments: [...song.comments, newComment],
+            edited: createdAt,
+            activity: [{ text: "New comment added", createdAt }, ...song.activity],
+        }: song))
         setCommentText("");
+    }
+
+    const deleteNote = (noteId) => {
+        const deletedAt = new Date().toISOString();
+        setSongs((currentSongs) => currentSongs.map((song) =>
+            song.id === selectedSongId ? {
+                ...song,
+                notes: song.notes.filter((note) => note.id !== noteId),
+                edited: deletedAt,
+                activity: [{ text: "Sticky note deleted", createdAt: deletedAt }, ...song.activity],
+            } : song
+        ));
+    }
+
+    const deleteComment = (commentId) => {
+        const deletedAt = new Date().toISOString();
+        setSongs((currentSongs) => currentSongs.map((song) =>
+            song.id === selectedSongId ? {
+                ...song,
+                comments: song.comments.filter((comment) => comment.id !== commentId),
+                edited: deletedAt,
+                activity: [{ text: "Comment deleted", createdAt: deletedAt }, ...song.activity],
+            } : song
+        ));
     }
 
     return (
@@ -102,19 +132,19 @@ export default function SongTab() {
                     <p className="text-sm text-[#94A3B8]">Keep melodies moving from rough takes to release-ready tracks</p>
 
                 </div>
-                <button type="button" className="px-3 py-2 rounded-xl text-sm font-medium text-[#F8FAFC] bg-[#1E293B] hover:bg-[#334155]"
+                <button type="button" onClick={() => setView("create")} className="px-3 py-2 rounded-xl text-sm font-medium text-[#F8FAFC] bg-[#1E293B] hover:bg-[#334155]"
                 style={{ background: "rgba(139, 92, 246, 0.18)", border: "1px solid rgba(139, 92, 246, 0.35)"}}>
-                    New Song
                     <span className="inline-flex items-center gap-2">
                         <Plus size={14}/>
                     </span>
+                    New Song
                 </button>
             </div>
 
-            <div className="grid grid-cols-1 xl: grid-cols-[1.05fr_1.5fr] gap-6">
+            <div className="grid grid-cols-1 xl:grid-cols-[1.05fr_1.5fr] gap-6">
                 <div className="space-y-6">
                     <Section 
-                        title="In Progress"
+                        title="In progress"
                         songs={groupedSongs.inProgress}
                         selectedSongId={selectedSongId}
                         onSelectSong={setSelectedSongId}
@@ -137,7 +167,7 @@ export default function SongTab() {
 
                     <button 
                         type="button"
-                        onClick={toggleSongStatus}
+                        onClick={() => toggleSongStatus(selectedSong.id)}
                         className="px-2.5 py-1 rounded-full text-[11px] font-medium"
                         style = {{ background: selectedSong?.status === "Completed" ? "rgba(52, 211, 152, 0.12)" : "rgba(139, 92, 246, 0.12)", 
                                 color: selectedSong?.status === "Completed" ? "#34D399" : "#C4B5FD",
@@ -155,15 +185,21 @@ export default function SongTab() {
                 <div className="mt-6 space-y-5">
                     <Panel title="overview" icon={<Sparkles size={14}/>}>
                         <p className="text-sm text-[#F8FAFC] leading-6">
-                            {selectedSong?.mood || "-"} · {selectedSong?.genre || "-"} · edited {selectedSong?.edited || "-"}
+                            {selectedSong?.mood || "-"} · {selectedSong?.genre || "-"} · edited {formatRelativeTime(selectedSong?.edited, "-")}
                         </p>
                     </Panel>
 
                     <Panel title="Sticky Notes" icon={<StickyNote size={14} />}>
                         <div className="space-y-3">
                             {selectedSong?.notes.map((n, index) => (
-                                <div key={`${n.text}-${index}`} className="rounded-xl p-3 text-sm text-[#0F172A]" style={{ background: n.color || "#F8FAFC"}}>
-                                    {n.text}
+                                <div key={n.id ?? `${n.text}-${index}`} className="flex items-start justify-between gap-3 rounded-xl p-3 text-sm text-[#0F172A]" style={{ background: n.color || "#F8FAFC"}}>
+                                    <div>
+                                        <p>{n.text}</p>
+                                        <time className="mt-2 block text-xs text-slate-600">{formatRelativeTime(n.createdAt)}</time>
+                                    </div>
+                                    <button type="button" onClick={() => deleteNote(n.id)} aria-label="Delete note" title="Delete note" className="shrink-0 rounded p-1 text-slate-700 hover:bg-black/10">
+                                        <Trash2 size={14} />
+                                    </button>
                                 </div>
                             ))}
                         </div>
@@ -183,7 +219,12 @@ export default function SongTab() {
                                 <div key={c.id} className="rounded-xl bg-white/5 p-3">
                                     <div className="flex items-center justify-between gap-3 text-xs text-[#94A3B8]">
                                         <span className="font-medium text-[#F8FAFC]">{c.author}</span>
-                                        <span>{c.time}</span>
+                                        <div className="flex items-center gap-2">
+                                            <time dateTime={c.createdAt}>{formatRelativeTime(c.createdAt, c.time)}</time>
+                                            <button type="button" onClick={() => deleteComment(c.id)} aria-label="Delete comment" title="Delete comment" className="rounded p-1 hover:bg-white/10 hover:text-white">
+                                                <Trash2 size={13} />
+                                            </button>
+                                        </div>
                                     </div>
                                     <p className="mt-2 text-sm text-[#E2E8F0]">{c.text}</p>
                                 </div>
@@ -204,7 +245,7 @@ export default function SongTab() {
                             {selectedSong?.activity.map((a, index) => (
                                 <div key={`${a.text}-${index}`} className="flex items-center justify-between gap-3 text-sm">
                                     <span className="text-[#E2E8F0]">{a.text}</span>
-                                    <span className="text-[#94A3B8]">just now</span>
+                                    <time className="shrink-0 text-[#94A3B8]" dateTime={a.createdAt}>{formatRelativeTime(a.createdAt)}</time>
                                 </div>
                             ))}
                         </div>
@@ -245,7 +286,7 @@ function Section({ title, songs, selectedSongId, onSelectSong }) {
 
                                 <div className="min-w-0">
                                     <p className="text-sm font-medium text-[#F8FAFC] truncate">{s.title}</p>
-                                    <p className="text-xs text-[#94A3B8] truncate">{s.tempo} · edited {s.edited}</p>
+                                    <p className="text-xs text-[#94A3B8] truncate">{s.tempo} · edited {formatRelativeTime(s.edited, "-")}</p>
                                 </div>
                             </div>
 
@@ -281,4 +322,23 @@ function Metric({label, value}) {
             <p className="mt-2 text-sm font-medium text-[#F8FAFC]">{value}</p>
         </div>
     )
+}
+
+function formatRelativeTime(timestamp, fallback = "Recently") {
+    if (!timestamp) return fallback;
+
+    const elapsedSeconds = Math.max(0, Math.floor((Date.now() - new Date(timestamp).getTime()) / 1000));
+    if (!Number.isFinite(elapsedSeconds)) return fallback;
+    if (elapsedSeconds < 60) return "just now";
+
+    const units = [
+        [60 * 60 * 24 * 365, "year"],
+        [60 * 60 * 24 * 30, "month"],
+        [60 * 60 * 24, "day"],
+        [60 * 60, "hour"],
+        [60, "minute"],
+    ];
+    const [secondsPerUnit, unit] = units.find(([seconds]) => elapsedSeconds >= seconds) ?? units[units.length - 1];
+    const amount = Math.floor(elapsedSeconds / secondsPerUnit);
+    return `${amount} ${unit}${amount === 1 ? "" : "s"} ago`;
 }
